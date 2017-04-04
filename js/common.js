@@ -3,21 +3,109 @@
 		this._randomArray = [];
 		this._generateBtn = $("[data-generate]");
 		this._sortBtn = $("[data-sort]");
+		this._sortCounter = 0;
+	}
+
+	Animate.prototype._swapNumbers = function(i, interval) {
+		var that = this;
+		setTimeout(function(){
+  			var array = $("[data-num-item]");
+  			[].forEach.call(array, function(i){
+  				$(i).removeClass("item_active")
+  			});
+  			//Проверяем не окончена ли сортировка
+  			var check = that._compareArrays.call(that);
+  			if(check === array.length){
+  				clearInterval(interval);
+  				that._sortBtn.removeClass("disabled");
+  				that._sortBtn.text("Завершено!");
+  				that._showResults.call(that);
+  				return;
+  			}
+  			$(array[i]).addClass("item_active");
+        $(array[i+1]).addClass("item_active");
+  			var number = parseInt(array[i].innerText),
+  					nextNumber = parseInt(array[i+1].innerText)
+        if (number > nextNumber) {
+        	//that._animateSwamp.call(that, array[i], array[i+1]);
+        	/*var distance = $(array[i]).offset().left - $(array[i+1]).offset().left;
+          $.when($(array[i]).animate({
+          	left: distance
+          }, 500),
+        		$(array[i+1]).animate({
+        			left: -distance
+        		}, 500)).done(function(){
+          	$(array[i]).css("left", "0px");
+          	$(array[i+1]).css("left", "0px");
+          	$(array[i+1]).insertBefore($(array[i]));
+          })*/
+
+          var temp = array[i].innerText;
+          array[i].innerText = array[i+1].innerText;
+          array[i+1].innerText = temp;
+          swapped = true;
+        } 
+  		}, 0 + (500*i))
+		}
+
+	Animate.prototype._animateSwamp = function(elem, nextElem) {
+		var 
+				distance = $(elem).offset().left - $(nextElem).offset().left;
+
+        $.when($(nextElem).animate({
+            left: -distance
+        }, 1000),
+        $(elem).animate({
+            left: distance
+        }, 1000)).done(function () {
+            $(elem).css('left', '0px');
+            $(nextElem).css('left', '0px');
+            nextElem.parentElement.insertBefore(elem, nextElem);
+        });
+
 	}
 
 	Animate.prototype._bubbleSort = function(array) {
-		var swapped;
+		var swapped,
+				temp,
+				that = this;
     do {
       swapped = false;
       for (var i=0; i < array.length-1; i++) {
-        if (array[i] > array[i+1]) {
-            var temp = array[i];
-            array[i] = array[i+1];
-            array[i+1] = temp;
-            swapped = true;
-        }
+      	(function(i){
+      		that._swapNumbers.call(that, i, interval);
+      		var interval = setInterval(function(){
+      			that._swapNumbers.call(that, i, interval);
+      		}, 5000)
+      	})(i);
       }
     } while (swapped);
+	}
+
+	Animate.prototype._compareArrays = function() {
+		var numbers = $("[data-num-item]"),
+				counter = 0;
+		for(var i = 0; i<numbers.length; i++) {
+			if(numbers[i].innerText == this._sortedArray[i])
+				counter++
+		}
+		console.log(counter)
+		return counter
+	}
+
+	Animate.prototype._showResults = function() {
+		var beforeSorting = document.createElement("div"),
+				afterSorting = document.createElement("div");
+		beforeSorting.className = "result result-before";
+		beforeSorting.innerHTML = "<h2>До сортировки</h2><span>"+this._randomArray+"</span>";
+		afterSorting.className = "result result-after";
+		afterSorting.innerHTML = "<h2>После сортировки</h2><span>"+this._sortedArray+"</span>";
+		$(".body-wrapper").append(beforeSorting);
+		$(".body-wrapper").append(afterSorting);
+		setTimeout(function(){
+			$(".result-before").addClass("result_animated");
+			$(".result-after").addClass("result_animated");
+		}, 500);
 	}
 
 	Animate.prototype._getRandomNumber = function(min, max) {
@@ -26,79 +114,102 @@
 	  return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 
-	Animate.prototype._setArrayOfRandomNumbers = function() {
+	Animate.prototype._insertNumbersIntoDOM = function() {
 		var that = this;
 		this._generateBtn.on("click", function(e){
 			//Деляем кнопку генерации отключенной после запуска
+			$(this).off("click");
 			$(this).attr("data-disabled", "");
-			$(this).addClass("disabled");
+			var button = this;
+			setTimeout(function(){
+				$(button).addClass("translateLeft");
+				$(".sort-btn").addClass("sort-btn_visible");
+			}, 2750);
+			/*$(this).addClass("disabled");
 			//Отменяем обработчик у отключенной кнопки
-			$("[data-disabled]").off("click");
+			$("[data-disabled]").off("click");*/
 			e.preventDefault();
-			// Генерируем 10 случайных целых чисел от 0 до 100
-			for(var i = 0; i < 10; i++) {
-				var number = that._getRandomNumber(0,100);
-				//Проверяем было ли уже сгенерировано такое число во избежание повторяющихся чисел
-				($.inArray(number, that._randomArray) === -1) 
-				? //Если число уникально - добавляем в массив
-				 that._randomArray.push(number) 
-				: //Если нет - проходим итерацию еще раз
-						i--
-					
-					
-						
-			}
+			that._setArrayOfRandomNumbers.call(that);
 			that._renderNumbers.call(that);
-			that._animateNumbersAppearence.call(that);
+			that._animateNumbersAppearence.call(that, "[data-num-item]", 250);
 		});
 	}
 
-	Animate.prototype._renderNumbers = function() {
-		var that = this,
-				numbersContainer = document.createElement("div");
-		$(numbersContainer).addClass("number-wrapper");
-		$(numbersContainer).attr("data-num-wrapper");
+	Animate.prototype._sortNumbers = function() {
+		var that = this;
+		this._sortBtn.on("click", function(){
+			$(this).off("click");
+			$(this).addClass("disabled");
+			this.innerHTML = "Сортируем <span class='sorting-dot'></span> <span class='sorting-dot'></span> <span class='sorting-dot'></span>"
+			var numbers = $("[data-num-item]");
+			that._bubbleSort(numbers);
+		});
+	}
+
+	Animate.prototype._setArrayOfRandomNumbers = function() {
+		// Генерируем 10 случайных целых чисел от 0 до 100
+			for(var i = 0; i < 10; i++) {
+				var number = this._getRandomNumber(0,100);
+				//Проверяем было ли уже сгенерировано такое число во избежание повторяющихся чисел
+				($.inArray(number, this._randomArray) === -1) 
+				? //Если число уникально - добавляем в массив
+				 this._randomArray.push(number) 
+				: //Если нет - проходим итерацию еще раз
+						i--					
+			}
+			//Создаем отсортировааный массив для отображения в конце
+			var tempArray = this._randomArray.slice();
+			tempArray.sort(function(a,b){
+				return a - b;
+			});
+			this._sortedArray = tempArray;
+	}
+
+	Animate.prototype._createNumberItem = function(container) {
 		this._randomArray.forEach(function(i){
 			var span = document.createElement("span");
 			$(span).addClass("number-item");
 			$(span).attr("data-num-item", "");
 			$(span).text(i);
-			$(numbersContainer).append(span);
+			$(container).append(span);
 			span = null;
 		});
-		$(".body-wrapper").append(numbersContainer);
+		$(".body-wrapper").append(container);
 	}
 
-	Animate.prototype._swapNumbers = function() {
-		var numbersInDOM = $("[data-num-item]");
-		//console.log(numbersInDOM)
-		for (var i = 0; i < numbersInDOM.length; i++) {
-			//console.log(numbersInDOM);
-			(function(i){
-				setTimeout(function(){
-					//console.log(i);
-					$(numbersInDOM[i]).css("backgroundColor", "yellow");
-				}, 1000 + (1000*i))
-			})(i);
-		}
+	Animate.prototype._renderNumbers = function() {
+		var numbersContainer = document.createElement("div");
+		$(numbersContainer).addClass("number-wrapper");
+		$(numbersContainer).attr("data-num-wrapper");
+		this._createNumberItem(numbersContainer);
 	}
+
+/*	Animate.prototype._renderSortedNumbers = function() {
+		var sortedNumbersContainer = document.createElement("div");
+		$(sortedNumbersContainer).addClass("numbers-sorted-wrapper");
+		$(sortedNumbersContainer).attr("data-sorted-wrapper");
+		this._createNumberItem(sortedNumbersContainer);
+		var sortedNumbers = sortedNumbersContainer.querySelectorAll("[data-num-item]");
+		[].forEach.call(sortedNumbers, function(i){
+			$(i).attr("data-sorted-item", "");
+			$(i).removeAttr("data-num-item");
+		})
+	}*/
+
+	
 
 	Animate.prototype._initMethods = function() {
 		var that = this;
-		this._setArrayOfRandomNumbers();
-		this._renderNumbers();
-		this._sortBtn.on("click", function(){
-			that._swapNumbers();
-		})
+		this._insertNumbersIntoDOM();
+		this._sortNumbers();
 	}
-	Animate.prototype._animateNumbersAppearence = function() {
-		var numbers = $("[data-num-item]");
+	Animate.prototype._animateNumbersAppearence = function(selector, time) {
+		var numbers = $(selector);
 		for (var i = 0; i < numbers.length; i++){
 			(function(i){
 					setTimeout(function(){
-						//console.log(i);
 						$(numbers[i]).addClass("number-item_animated");
-					}, 0 + (500*i))
+					}, 0 + (time*i))
 				})(i);
 		}
 	}

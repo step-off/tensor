@@ -7,6 +7,7 @@ body {
 	font-size: 14px;
 	line-height: 1.5;
 	width: 1200px;
+	overflow-x: hidden;
 }
 .body-wrapper {
 	min-height: 110vh;
@@ -15,10 +16,12 @@ body {
 	box-shadow: 0 5px 15px rgba(0, 1, 1, 0.2);
 }
 .btn-wrapper {
+	position: relative;
 	width: 90%;
 	margin: 0 auto;
 	text-align: center;
 	margin-bottom: 50px;
+	height: 50px;
 }
 h1 {
 	margin: 0;
@@ -26,7 +29,21 @@ h1 {
 	padding-top: 50px;
 	text-align: center;
 }
+.generation-decsription {
+	padding-top: 10px;
+	text-align: center;
+	margin: 0 auto;
+	margin-bottom: 50px;
+	width: 250px;
+	height: 100px;
+	border: 1px solid #c5d0db;
+	box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+}
 button {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	margin-left: -125px;
 	height: 50px;
 	width: 250px;
 	background: #21DDA5;
@@ -41,6 +58,14 @@ button {
 	cursor: pointer;
 	border-radius: 5px;
 }
+.sort-btn {
+	transform: translateX(10000px);
+	transition: transform 1s ease-in-out;
+}
+.sort-btn_visible {
+	transform: translateX(0);
+	transition: transform 1s ease-in-out;
+}
 .disabled {
 	background: grey;
 }
@@ -48,18 +73,96 @@ button {
 	width: 85%;
 	margin: 0 auto;
 	text-align: center;
+	margin-bottom: 150px;
 }
 .number-item {
+	min-width: 55px;
 	transform: translateY(-1000px);
-	transition: transform 1s ease-in-out;
+	transition: transform .5s ease-in-out;
 	font: inherit;
 	font-size: 48px;
 	color: red;
 	margin-right: 10px;
 	background: blue;
 	display: inline-block;
+	box-sizing: border-box;
 }
 .number-item_animated {
 	transform: translateY(0px);
 	transition: transform 1s ease-in-out;
 }
+.item_active {
+	border: 3px solid orange;
+	//transition: all .5s;
+}
+.translateLeft {
+	transform: translateX(-10000px);
+	transition: transform 0.5s ease-in-out;
+}
+.translateRight {
+	transform: translateX(10000px);
+	transition: transform 0.5s ease-in-out;
+}
+
+.sorting-dot:first-child {
+	margin-left: 5px;
+	background: #fff;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	display: inline-block;
+	position: relative;
+	animation: pulsingDot 1s ease-in-out infinite;
+}
+.sorting-dot:nth-child(2) {
+	background: #fff;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	display: inline-block;
+	position: relative;
+	animation: pulsingDot 1s .15s ease-in-out infinite;
+}
+.sorting-dot:nth-child(3) {
+	background: #fff;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	display: inline-block;
+	position: relative;
+	animation: pulsingDot 1s .35s ease-in-out infinite;
+}
+
+@keyframes pulsingDot {
+	0% {
+		transform: scale(1.5, 1.5);
+		/* top: -5px; */
+	}
+/* 	50% {
+	transform: scale(1.25, 1.25);
+}
+ */
+	100% {
+		transform: scale(.75, .75);
+		/* top: 0; */
+	}
+}
+
+.result {
+	border: 1px solid black;
+}
+
+.result-before {
+	transform: translateX(-10000px);
+}
+
+.result-after {
+	transform: translateX(10000px);
+}
+
+.result_animated {
+	transform: translateX(0px);
+	transition: transform 2s ease-in-out;
+}
+
+
