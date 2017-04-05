@@ -8,19 +8,22 @@
 
 	Animate.prototype._swapNumbers = function(i, interval) {
 		var that = this;
-		setTimeout(function(){
+		var timeout = setTimeout(function(){
   			var array = $("[data-num-item]");
-  			[].forEach.call(array, function(i){
-  				$(i).removeClass("item_active")
+  			[].forEach.call(array, function(item){
+  				$(item).removeClass("item_active");
+  				$(item).removeClass("swap_animated");
   			});
   			//Проверяем не окончена ли сортировка
   			var check = that._compareArrays.call(that);
   			if(check === array.length){
   				clearInterval(interval);
+  				clearTimeout(timeout);
+  				if(that._id) return
   				that._sortBtn.removeClass("disabled");
   				that._sortBtn.text("Завершено!");
   				that._showResults.call(that);
-  				return;
+  				that._id = true;
   			}
   			$(array[i]).addClass("item_active");
         $(array[i+1]).addClass("item_active");
@@ -39,13 +42,16 @@
           	$(array[i+1]).css("left", "0px");
           	$(array[i+1]).insertBefore($(array[i]));
           })*/
-
+          $(array[i]).addClass("swap_animated");
+          $(array[i+1]).addClass("swap_animated");
           var temp = array[i].innerText;
-          array[i].innerText = array[i+1].innerText;
-          array[i+1].innerText = temp;
+          /*array[i].innerText = array[i+1].innerText;*/
+          array[i].innerHTML = "<i class='number'>"+array[i+1].innerText+"</i>";
+          /*array[i+1].innerText = temp;*/
+          array[i+1].innerHTML = "<i class='number'>"+temp+"</i>";
           swapped = true;
         } 
-  		}, 0 + (500*i))
+  		}, 0 + (750*i))
 		}
 
 	Animate.prototype._animateSwamp = function(elem, nextElem) {
@@ -76,7 +82,7 @@
       		that._swapNumbers.call(that, i, interval);
       		var interval = setInterval(function(){
       			that._swapNumbers.call(that, i, interval);
-      		}, 5000)
+      		}, 7000)
       	})(i);
       }
     } while (swapped);
@@ -97,15 +103,15 @@
 		var beforeSorting = document.createElement("div"),
 				afterSorting = document.createElement("div");
 		beforeSorting.className = "result result-before";
-		beforeSorting.innerHTML = "<h2>До сортировки</h2><span>"+this._randomArray+"</span>";
+		beforeSorting.innerHTML = "<h2>Массив <br> до сортировки</h2><span>"+this._randomArray+"</span>";
 		afterSorting.className = "result result-after";
-		afterSorting.innerHTML = "<h2>После сортировки</h2><span>"+this._sortedArray+"</span>";
+		afterSorting.innerHTML = "<h2>Массив <br> после сортировки</h2><span>"+this._sortedArray+"</span>";
 		$(".body-wrapper").append(beforeSorting);
 		$(".body-wrapper").append(afterSorting);
 		setTimeout(function(){
 			$(".result-before").addClass("result_animated");
 			$(".result-after").addClass("result_animated");
-		}, 500);
+		}, 0);
 	}
 
 	Animate.prototype._getRandomNumber = function(min, max) {
@@ -167,10 +173,13 @@
 
 	Animate.prototype._createNumberItem = function(container) {
 		this._randomArray.forEach(function(i){
-			var span = document.createElement("span");
+			var span = document.createElement("span"),
+					numberWrapper = document.createElement("i");
 			$(span).addClass("number-item");
+			$(numberWrapper).addClass("number");
 			$(span).attr("data-num-item", "");
-			$(span).text(i);
+			$(numberWrapper).text(i);
+			$(span).append(numberWrapper);
 			$(container).append(span);
 			span = null;
 		});
