@@ -1,5 +1,5 @@
 body {
-	min-height: 110vh;
+	min-height: 100vh;
 	margin: 0;
 	padding: 0;
 	background: #eaecf0;
@@ -13,7 +13,7 @@ body {
 .body-wrapper {
 	position: relative;
 	padding-top: 50px;
-	min-height: 110vh;
+	min-height: 100vh;
 	width: 1000px;
 	margin: 0 auto;
 	box-shadow: 0 5px 15px rgba(0, 1, 1, 0.2);
@@ -41,8 +41,9 @@ h1 {
 	min-height: 110px;
 	margin: 50px 0;
 }
-.generation-decsription,
-.sorting-decsription {
+.generation-description,
+.sorting-description,
+.status-description {
 	font-size: 17px;
 	position: absolute;
 	color: #323a45;
@@ -58,8 +59,9 @@ h1 {
 	border: 1px solid #c5d0db;
 	box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
 }
-.generation-decsription:after,
-.sorting-decsription:after {
+.generation-description:after,
+.sorting-description:after,
+.status-description_done:after {
 	position: absolute;
 	display: block;
 	content: "\27A4";
@@ -78,26 +80,32 @@ h1 {
 	animation-direction: alternate;
 	transition: transform .75s ease-in-out;
 }
-.sorting-decsription {
+.generation-description {
+	transition: transform 1s cubic-bezier(0,1.02,0,.91);
+}
+.sorting-description,
+.status-description {
 	transform: translateX(10000px);
-	transition: transform 1s ease-in-out;
+	transition: transform 1s cubic-bezier(.97,0,1,.17);
 	padding-top: 4%;
 	height: 115px;
 }
-.sorting-decsription_visible {
+.sorting-description_visible,
+.status-description_visible {
 	transform: translateX(0);
-	transition: transform 1s ease-in-out;
+	transition: transform 1s cubic-bezier(0,1.02,0,.91);
 }
-.sorting-description_done:after {
+.status-description_done:after {
 	content: "\2714";
 	transform: rotate(0deg) scale(1.25, 1.25);
 	top: 110%;
-    margin-left: -7px;
-    transition: transform .75s ease-in-out;
+  margin-left: -7px;
+  transition: transform .75s ease-in-out;
 }
-.generation-decsription_hidden {
+.sorting-description_hidden,
+.generation-description_hidden {
 	transform: translateX(-10000px);
-	transition: transform 1s ease-in-out;
+	transition: transform 1s cubic-bezier(.97,0,1,.17);
 }
 button {
 	position: absolute;
@@ -118,33 +126,42 @@ button {
 	cursor: pointer;
 	border-radius: 5px;
 }
+.generate-btn {
+	transition: transform 1s cubic-bezier(.99,.01,.01,.99);
+}
 button:hover {
 	background-color: #1f967b;
 }
-.sort-btn {
+.sort-btn,
+.status-btn {
 	transform: translateX(10000px);
-	transition: transform 1s ease-in-out;
+	transition: transform 1s cubic-bezier(.97,0,1,.17);
 }
-.sort-btn_visible {
+.sort-btn_visible,
+.status-btn_visible {
 	transform: translateX(0);
-	transition: transform 1s ease-in-out, background-color .5s ease;
+	transition: transform 1s cubic-bezier(.99,.01,.01,.99), background-color .5s ease;
 }
-.sort-btn_done {
+
+.status-btn_visible {
 	cursor: default;
 }
-.sort-btn_done:hover {
+.status-btn_visible:hover {
 	background: rgb(37, 182, 149);
 }
 .refresh-btn {
 	transform: translateY(-5000px);
-	transition: transform 1s ease-in-out;
+	transition: transform 1s cubic-bezier(.97,0,1,.17);
 	position: relative;
 }
 .refresh-btn_visible {
 	transform: translateY(0);
-	transition: transform 1s ease-in-out;
+	transition: transform 1s 2.5s cubic-bezier(0,1.02,0,.91);
 }
 .disabled {
+	background: #323a45;
+}
+.disabled:hover {
 	background: #323a45;
 }
 .refresh-btn-wrapper {
@@ -208,11 +225,7 @@ span.number {
 }
 .translateLeft {
 	transform: translateX(-10000px);
-	transition: transform 0.5s ease-in-out;
-}
-.translateRight {
-	transform: translateX(10000px);
-	transition: transform 0.5s ease-in-out;
+	transition: transform 0.75s cubic-bezier(.99,.01,.01,.99);
 }
 
 .sorting-dot:first-child {
@@ -272,15 +285,20 @@ span.number {
 
 .result-before {
 	transform: translateX(-10000px);
+	transition: transform 1s ease-in;
 }
 
 .result-after {
 	transform: translateX(10000px);
+	transition: transform 1s ease-in;
 }
 
 .result_animated {
 	transform: translateX(0px);
-	transition: transform 2s ease-in-out;
+	transition: transform 1.5s .5s cubic-bezier(0,1.02,0,.91);
+}
+.result-after.result_animated {
+	transition: transform 1.5s 1s cubic-bezier(0,1.02,0,.91);
 }
 .items-wrapper {
 	text-align: center;
@@ -290,10 +308,10 @@ span.number {
 	width: 35px;
 	height: 30px;
 	padding-top: 5px;
-    border: 1px solid  #62809d;
-    margin-right: 1px;
-    border-radius: 50%;
-    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+  border: 1px solid  #62809d;
+  margin-right: 1px;
+  border-radius: 50%;
+  box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
 }
 
 /* ======== Анимации =========
